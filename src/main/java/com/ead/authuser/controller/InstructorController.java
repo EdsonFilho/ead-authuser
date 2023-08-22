@@ -1,7 +1,6 @@
 package com.ead.authuser.controller;
 
 import com.ead.authuser.dtos.InstructorDto;
-import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.enums.UserType;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
@@ -29,7 +28,7 @@ public class InstructorController {
     public ResponseEntity<Object> updateUser(@RequestBody @Valid InstructorDto instructorDto){
         log.debug("POST: updateUser userDto received {}", instructorDto.toString());
         Optional<UserModel> userModelOptional = userService.findById(instructorDto.getUserId());
-        if(!userModelOptional.isPresent()){
+        if(userModelOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found");
         } else {
             var userModel = userModelOptional.get();

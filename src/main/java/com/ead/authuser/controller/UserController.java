@@ -35,7 +35,7 @@ public class UserController {
                                             @PageableDefault(sort = "userId") Pageable pageable,
                                             @RequestParam(required = false) UUID courseId){
 
-        Page<UserModel> userModelPage = null;
+        Page<UserModel> userModelPage;
         if (courseId != null) {
             userModelPage = userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
         } else {
@@ -52,11 +52,10 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<Object> getOneUser(@PathVariable(value = "userId") UUID userId){
         Optional<UserModel> userModelOptional = userService.findById(userId);
-        if(!userModelOptional.isPresent()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found");
-        } else {
-            return ResponseEntity.status(HttpStatus.OK).body(userModelOptional.get());
-        }
+
+        return userModelOptional
+                .<ResponseEntity<Object>>map(userModel -> ResponseEntity.status(HttpStatus.OK).body(userModel))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("user not found"));
     }
 
     @DeleteMapping("/{userId}")
